@@ -39,7 +39,7 @@ jobs:
             - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
       - run:
           name: Run Server
-          command: pnpm serve:api
+          command: pnpm nx serve api
           background: true
       - run:
           name: Wait Server
