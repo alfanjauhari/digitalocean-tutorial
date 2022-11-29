@@ -1,0 +1,59 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.3
+
+jobs:
+  initialize:
+    executor: node/default
+    resource_class: large
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore pnpm Package Cache
+          keys:
+            - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+      - run:
+          name: Initialize Project
+          command: pnpm install
+      - save_cache:
+          name: Save pnpm Package Cache
+          key: pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - node_modules
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+  test:
+    executor: node/default
+    resource_class: large
+
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          name: Restore pnpm Package Cache
+          keys:
+            - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+      - run:
+          name: Run Server
+          command: pnpm serve:api
+          background: true
+      - run:
+          name: Wait Server
+          command: pnpm wait-port $PORT -t 10000
+      - run:
+          name: Test Project
+          command: pnpm test
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - initialize:
+          context: digitalocean-tutorial
+      - test:
+          context: digitalocean-tutorial
+          requires: [initialize]

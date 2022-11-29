@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@digitalocean-tutorial/api/welcome": ["libs/api/welcome/src/index.ts"],
+      "@digitalocean-tutorial/web/welcome": ["libs/web/welcome/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
